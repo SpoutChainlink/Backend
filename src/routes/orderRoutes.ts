@@ -3,10 +3,10 @@ import { orderController } from "../controllers/orderController"
 
 const router = Router()
 
-// Order routes
-router.post("/event", orderController.createOrderFromEvent)
-router.get("/", orderController.getOrders)
-router.get("/:id", orderController.getOrder)
-router.patch("/:id/status", orderController.updateOrderStatus)
+// Route to create a new order
+router.post("/orders", orderController.createOrder)
+
+// Route to get a specific order by its ID
+router.get("/orders/:id", orderController.getOrder)
 
 export default router

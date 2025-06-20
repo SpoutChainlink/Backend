@@ -1,10 +1,10 @@
-import express, { Express, Request, Response } from "express"
+import express, { Express, Request, Response, NextFunction } from "express"
 import cors from "cors"
 import { config } from "./config"
-import { errorHandler } from "./middleware/errorHandler"
 import userRoutes from "./routes/userRoutes"
 import assetRoutes from "./routes/assetRoutes"
 import orderRoutes from "./routes/orderRoutes"
+import { eventListenerService } from "./services/eventListenerService"
 
 const app: Express = express()
 
@@ -30,8 +30,15 @@ app.get("/", (req: Request, res: Response) => {
   })
 })
 
-// Error handling
-app.use(errorHandler)
+// Centralized Error Handler
+// This will catch any errors passed by next(error) in our controllers
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack)
+  res.status(500).json({
+    status: "error",
+    message: err.message || "Something went wrong!",
+  })
+})
 
 // Start server
 app.listen(config.port, () => {
@@ -40,3 +47,6 @@ app.listen(config.port, () => {
   )
   console.log(`⚡️[server]: Environment: ${config.nodeEnv}`)
 })
+
+// Start the smart contract event listener
+eventListenerService.start()
